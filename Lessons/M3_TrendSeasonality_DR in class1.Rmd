@@ -112,6 +112,7 @@ Many of the functions we will use require a time series object. You can transfor
 ts_inflow_data <- ts(inflow_data[,2:(2+nhydro-1)],frequency=12) 
 #note that we are only transforming columns with inflow data, not the date columns  #start=my_date[1],end=my_date[nobs],
 head(ts_inflow_data,15)
+
 ```
 
 
@@ -181,6 +182,38 @@ Now let's shift attention to the seasonal component.
 ```{r}
 #Use seasonal means model
 
+iHP <- 1
+
+#create dummies
+dummies <- seasonaldummy(ts_inflow_data[,iHP])
+
+#regress on dummies
+seas_linear_model <- lm(inflow_data[,(iHP+1)]~dummies)
+summary(seas_linear_model)
+
+#store coeff
+beta0 <- seas_linear_model$coefficients[1]
+beta1 <- seas_linear_model$coefficients[2:12]
+
+#seasonal comp
+seas_comp <- array(0,nobs)
+for(i in 1:nobs){
+  seas_comp[i] <- beta0 + beta1 %*% dummies[i,] #this tells it to do element by element multiplication
+} #in other words, this is matrix multiplication
+
+ggplot(inflow_data,aes(x=my_date))+
+  geom_line(aes(y=inflow_data[,(iHP+1)]), col="black")+
+  geom_line(aes(y=seas_comp),col="orange")
+
+#this did not produce the same output as shown in class
+
+y_deseason <- inflow_data[,(iHP+1)] - seas_comp
+
+ggplot(inflow_data,aes(x=my_date))+
+  geom_line(aes(y=inflow_data[,(iHP+1)]), col="black")+
+  geom_line(aes(y=y_deseason),col="green")
+
+#this did not produce the same output as shown in class
 
 ```
 
