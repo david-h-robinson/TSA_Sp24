@@ -156,27 +156,27 @@ nobs <- nrow(raw_energy_data)
 
 t <- 1:nobs
 
-renewable_linear_trend <- lm(raw_energy_data[,2]~t)
+renewable_linear_trend <- lm(raw_energy_data[,3]~t)
 summary(renewable_linear_trend)
 
 renewable_beta0 <- renewable_linear_trend$coefficients[1]
 renewable_beta1 <- renewable_linear_trend$coefficients[2]
 
-#For renewable energy, the slope is 0.47713 (Beta 0) and the intercept is 
-#134.27841 (Beta 1). These values, in addition to the low p-value and
+#For renewable energy, the slope is 0.70404 (Beta 0) and the intercept is 
+#180.98940 (Beta 1). These values, in addition to the low p-value and
 #higher R-squared, indicate a significant relationship between the renewable
-#energy data and time.
+#energy data and time. It is a moderately strong, positive relationship.
 
-hydroelectric_linear_trend <- lm(raw_energy_data[,3]~t)
+hydroelectric_linear_trend <- lm(raw_energy_data[,4]~t)
 summary(hydroelectric_linear_trend)
 
 hydroelectric_beta0 <- hydroelectric_linear_trend$coefficients[1]
 hydroelectric_beta1 <- hydroelectric_linear_trend$coefficients[2]
 
-#For hydroelectric power consumption, the slope is 0.70404 (Beta 0) and the
-#intercept is 180.98940 (Beta 1). These values, in addition to the low p-value
-#and higher R-squared, indicate a significant relationship between the
-#hydroelectric data and time.
+#For hydroelectric power consumption, the slope is -0.009849 (Beta 0) and the
+#intercept is 82.734747 (Beta 1). These values, in addition to the low p-value
+#and lower R-squared, indicate a significant relationship between the
+#hydroelectric data and time. It is a weak, negative relationship.
 
 ```
 
@@ -186,7 +186,7 @@ Use the regression coefficients from Q3 to detrend the series. Plot the detrende
 
 ```{r}
 
-renewable_y_detrend <- raw_energy_data[,2] - (renewable_beta0 + renewable_beta1*t)
+renewable_y_detrend <- raw_energy_data[,3] - (renewable_beta0 + renewable_beta1*t)
 
 renewable_df_detrend <- data.frame("date"=raw_energy_data[,1],
                                    "observed"=raw_energy_data[,2],
@@ -196,7 +196,7 @@ ggplot(renewable_df_detrend,aes(x=date))+
   geom_line(aes(y=observed),color="black")+
   geom_line(aes(y=detrend),color="blue")
 
-hydroelectric_y_detrend <- raw_energy_data[,3] -(hydroelectric_beta0 + hydroelectric_beta1*t)
+hydroelectric_y_detrend <- raw_energy_data[,4] -(hydroelectric_beta0 + hydroelectric_beta1*t)
 
 hydroelectric_df_detrend <- data.frame("date"=raw_energy_data[,1],
                                    "observed"=raw_energy_data[,3],
@@ -243,16 +243,14 @@ plot_grid(autoplot(hydroelectric_acf),
 #For renewable energy, the plots changed slightly -- for the ACF, in the 
 #detrended data, there are still very large correlation coefficients indicating
 #that the trends were not totally removed. That said, the detrending had some
-#effect as we can see a few spikes appeaing at lag 12, lag 24, and lag 3 that
+#effect as we can see a few spikes appearing at lag 12, lag 24, and lag 36 that
 #indicate seasonality. The PACF, in the detrended data, has similar spikes but
 #they are more pronounced as they "blossom" with less trend elsewhere in the
 #data.
 
-#For hydroelectric power consumption, the plots changed more dramatically --
-#for the ACF, in the detrended data, the correlation coefficients are still
-#very high and we can see that the sinusoidal pattern is gone and the ACF has a
-#more consistent pattern with a few spikes at lag 12, 24, and 36. The PACF, in
-#the detrended data, has similar spikes but they are less pronounced.
+#For hydroelectric power consumption, the plots did not change and seem to
+#appear largely the same. Based on the ACF and PACF, we see a similar
+#sinusoidal pattern and spike pattern.
 
 ```
 
@@ -266,13 +264,12 @@ Just by looking at the time series and the acf plots, do the series seem to have
 
 ```{r}
 
-#For renewable energy, the time series does indicate a seasonal trend; the ACF
-#does not indicate a seasonal trend.
+#For renewable energy, the time series does indicate a seasonal trend based on
+#the wave-like patterns; the ACF, however, does not indicate a seasonal trend.
 
 #For hydroelectric power consumption, the time series does indicate a seasonal 
 #trend given the spikes that occur annually; the ACF does indicate a seasonal
-#trend -- the spikes decrease around lags 6, 18, and 30 while they increase
-#around 12, 24, and 36.
+#trend given the sinusoidal pattern that is evident.
 
 ```
 
@@ -310,6 +307,7 @@ Use the regression coefficients from Q7 to deseason the series. Plot the deseaso
 ```{r}
 
 #Not running this for renewable energy since there was no seasonal trend
+#identified in the seasonal means model
 
 #Hydroelectric
 #Look at the regression coefficient. These will be the values of Beta
@@ -351,6 +349,7 @@ Plot ACF and PACF for the deseason series and compare with the plots from Q1. Yo
 ```{r}
 
 #Not running this for renewable energy since there was no seasonal trend
+#identified in the seasonal means model
 
 hydroelectric_acf_deseason <- Acf(deseason_hydroelectric_data,lag.max=40,
                                   type="correlation", plot=TRUE)
