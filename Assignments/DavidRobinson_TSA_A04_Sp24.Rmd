@@ -88,7 +88,7 @@ Try differencing at lag 1 only once, i.e., make `lag=1` and `differences=1`. Plo
 
 ```{r}
 
-ts_renewable_diff <- diff(ts_renewable[,2],lag=1,differences=1) #QUESTION -- currently this is written as just the vector
+ts_renewable_diff <- diff(ts_renewable[,2],lag=1,differences=1)
 
 ts_renewable_diff_plot <- autoplot(ts_renewable_diff) +
                                      ylab("Renewable Energy [Trillion Btu]")+
@@ -112,7 +112,8 @@ summary(renewable_linear_trend)
 renewable_beta0 <- renewable_linear_trend$coefficients[1]
 renewable_beta1 <- renewable_linear_trend$coefficients[2]
 
-renewable_y_detrend <- raw_energy_data[,2] - (renewable_beta0 + renewable_beta1*t)
+renewable_y_detrend <- raw_energy_data[,2] -
+  (renewable_beta0 + renewable_beta1*t)
 
 renewable_df_detrend <- data.frame("date"=raw_energy_data[,1],
                                    "observed"=raw_energy_data[,2],
