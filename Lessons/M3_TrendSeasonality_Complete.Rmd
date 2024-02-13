@@ -195,7 +195,6 @@ seas_means_model <- lm(inflow_data[,(iHP+1)]~dummies)
 summary(seas_means_model)
 
 #Look at the regression coefficient. These will be the values of Beta
-
 #Store regression coefficients
 beta_int <- seas_means_model$coefficients[1]
 beta_coeff <- seas_means_model$coefficients[2:12]
